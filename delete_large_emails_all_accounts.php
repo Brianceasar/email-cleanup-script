@@ -1,11 +1,15 @@
 <?php
+// cPanel API credentials
 $cpanelUser = 'your_cpanel_username';
 $cpanelPassword = 'your_cpanel_password';
 
+// Email server details
 $hostname = '{mail.yourdomain.com:993/imap/ssl}';
+
+// Function to connect to an email account and delete large emails
 function delete_large_emails($hostname, $email, $password) {
     $inbox = imap_open($hostname, $email, $password) or die('Cannot connect to mail server: ' . imap_last_error());
-    $emails = imap_search($inbox, 'BEFORE "' . date("12-01-2024", strtotime("-14 days")) . '"');
+    $emails = imap_search($inbox, 'BEFORE "' . date("d-M-Y", strtotime("-14 days")) . '"');
 
     if ($emails) {
         foreach ($emails as $email_number) {
@@ -21,9 +25,9 @@ function delete_large_emails($hostname, $email, $password) {
     imap_close($inbox);
 }
 
-
+// Function to get the list of email accounts
 function get_email_accounts($cpanelUser, $cpanelPassword) {
-    $url = "https://yourdomain.com:2083/json-api/cpanel?cpanel_jsonapi_user=$cpanelUser&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=listpopswithdisk";//use your url
+    $url = "https://yourdomain.com:2083/json-api/cpanel?cpanel_jsonapi_user=$cpanelUser&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=listpopswithdisk";
     $headers = array(
         "Authorization: Basic " . base64_encode("$cpanelUser:$cpanelPassword")
     );
@@ -38,7 +42,7 @@ function get_email_accounts($cpanelUser, $cpanelPassword) {
     return json_decode($result, true)['cpanelresult']['data'];
 }
 
-
+// Get the list of email accounts
 $email_accounts = get_email_accounts($cpanelUser, $cpanelPassword);
 
 foreach ($email_accounts as $account) {
