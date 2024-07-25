@@ -37,4 +37,17 @@ function get_email_accounts($cpanelUser, $cpanelPassword) {
 
     return json_decode($result, true)['cpanelresult']['data'];
 }
+
+
+$email_accounts = get_email_accounts($cpanelUser, $cpanelPassword);
+
+foreach ($email_accounts as $account) {
+    $email = $account['email'];
+    $password = 'password_for_' . $email; // You need to have passwords for each email account
+
+    // Delete large emails from this account
+    delete_large_emails($hostname, $email, $password);
+}
+
+echo "Large emails older than 2 weeks have been deleted from all accounts.";
 ?>
