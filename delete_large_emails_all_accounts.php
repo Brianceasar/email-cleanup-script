@@ -22,4 +22,19 @@ function delete_large_emails($hostname, $email, $password) {
 }
 
 
+function get_email_accounts($cpanelUser, $cpanelPassword) {
+    $url = "https://yourdomain.com:2083/json-api/cpanel?cpanel_jsonapi_user=$cpanelUser&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=listpopswithdisk";//use your url
+    $headers = array(
+        "Authorization: Basic " . base64_encode("$cpanelUser:$cpanelPassword")
+    );
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    return json_decode($result, true)['cpanelresult']['data'];
+}
 ?>
